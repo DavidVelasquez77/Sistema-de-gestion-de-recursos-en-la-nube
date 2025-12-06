@@ -78,31 +78,35 @@ class GestorSolicitudes:
             solicitud.estado = "Rechazada - Error al crear VM"
             return False, f"Error en Backup: {mensaje}"
 
-    def encontrar_centro_con_mas_recursos(self, lista_centros, cpu_req, ram_req, alm_req):
+    def encontrar_centro_con_mas_recursos(self, lista_centros, cpu_requerida, ram_requerida, almacenamiento_requerido):
         if lista_centros.primero is None:
             return None
         
-        mejor_centro = None
-        mejor_puntuacion = -1
+        centro_con_mas_recursos = None
+        puntuacion_maxima = -1
         
-        nodo_actual = lista_centros.primero
-        while nodo_actual:
-            centro = nodo_actual.dato
+        # Recorremos todos los centros para encontrar el que tenga mas recursos disponibles
+        nodo_centro_actual = lista_centros.primero
+        while nodo_centro_actual is not None:
+            centro_evaluado = nodo_centro_actual.dato
             
-            cpu_disponible = centro.recursos.obtener_cpu_disponible()
-            ram_disponible = centro.recursos.obtener_ram_disponible()
-            alm_disponible = centro.recursos.obtener_almacenamiento_disponible()
+            cpu_disponible_centro = centro_evaluado.recursos.obtener_cpu_disponible()
+            ram_disponible_centro = centro_evaluado.recursos.obtener_ram_disponible()
+            almacenamiento_disponible_centro = centro_evaluado.recursos.obtener_almacenamiento_disponible()
             
-            if cpu_disponible >= cpu_req and ram_disponible >= ram_req and alm_disponible >= alm_req:
-                puntuacion = cpu_disponible + ram_disponible + alm_disponible
+            # Verificamos si el centro tiene suficientes recursos para la solicitud
+            if cpu_disponible_centro >= cpu_requerida and ram_disponible_centro >= ram_requerida and almacenamiento_disponible_centro >= almacenamiento_requerido:
+                # Calculamos una puntuacion sumando todos los recursos disponibles
+                puntuacion_centro = cpu_disponible_centro + ram_disponible_centro + almacenamiento_disponible_centro
                 
-                if puntuacion > mejor_puntuacion:
-                    mejor_puntuacion = puntuacion
-                    mejor_centro = centro
+                # Si este centro tiene mas recursos que el mejor encontrado, lo guardamos
+                if puntuacion_centro > puntuacion_maxima:
+                    puntuacion_maxima = puntuacion_centro
+                    centro_con_mas_recursos = centro_evaluado
             
-            nodo_actual = nodo_actual.siguiente
+            nodo_centro_actual = nodo_centro_actual.siguiente
         
-        return mejor_centro
+        return centro_con_mas_recursos
 
     def ver_cola_solicitudes(self):
         if self.cola_solicitudes.esta_vacia():

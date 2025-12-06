@@ -22,48 +22,59 @@ class MaquinaVirtual:
     def agregar_contenedor(self, id_contenedor, nombre, imagen, puerto, cpu_porcentaje, ram_mb):
         from modelos.Contenedor import Contenedor
         
-        cpu_porc = float(cpu_porcentaje)
-        ram_megabytes = int(ram_mb)
+        cpu_porcentaje_necesario = float(cpu_porcentaje)
+        ram_megabytes_necesarios = int(ram_mb)
         
-        if cpu_porc > self.obtener_cpu_disponible_porcentaje():
-            return False, f"CPU insuficiente. Disponible: {self.obtener_cpu_disponible_porcentaje():.2f}%, Requerido: {cpu_porc}%"
+        cpu_disponible_porcentaje = self.obtener_cpu_disponible_porcentaje()
+        ram_disponible_mb = self.obtener_ram_disponible_mb()
         
-        if ram_megabytes > self.obtener_ram_disponible_mb():
-            return False, f"RAM insuficiente. Disponible: {self.obtener_ram_disponible_mb()} MB, Requerido: {ram_megabytes} MB"
+        # Verificamos si la VM tiene suficiente porcentaje de CPU para el contenedor
+        if cpu_porcentaje_necesario > cpu_disponible_porcentaje:
+            return False, f"CPU insuficiente. Disponible: {cpu_disponible_porcentaje:.2f}%, Requerido: {cpu_porcentaje_necesario}%"
         
-        nuevo_contenedor = Contenedor(id_contenedor, nombre, imagen, puerto, cpu_porc, ram_megabytes)
-        self.contenedores.insertar(nuevo_contenedor)
+        # Verificamos si la VM tiene suficiente RAM en megabytes para el contenedor
+        if ram_megabytes_necesarios > ram_disponible_mb:
+            return False, f"RAM insuficiente. Disponible: {ram_disponible_mb} MB, Requerido: {ram_megabytes_necesarios} MB"
         
-        self.cpu_porcentaje_usado += cpu_porc
-        self.ram_mb_usado += ram_megabytes
+        # Creamos el nuevo contenedor y lo agregamos a la lista de contenedores
+        contenedor_nuevo = Contenedor(id_contenedor, nombre, imagen, puerto, cpu_porcentaje_necesario, ram_megabytes_necesarios)
+        self.contenedores.insertar(contenedor_nuevo)
+        
+        # Consumimos los recursos de la VM para el contenedor
+        self.cpu_porcentaje_usado += cpu_porcentaje_necesario
+        self.ram_mb_usado += ram_megabytes_necesarios
         
         return True, f"Contenedor {id_contenedor} agregado exitosamente a VM {self.id_vm}"
 
     def eliminar_contenedor(self, id_contenedor):
-        nodo_actual = self.contenedores.primero
-        nodo_anterior = None
+        nodo_contenedor_actual = self.contenedores.primero
+        nodo_contenedor_anterior = None
         
-        while nodo_actual:
-            if nodo_actual.dato.id_contenedor == id_contenedor:
-                contenedor = nodo_actual.dato
+        # Recorremos la lista de contenedores para encontrar el que queremos eliminar
+        while nodo_contenedor_actual is not None:
+            if nodo_contenedor_actual.dato.id_contenedor == id_contenedor:
+                contenedor_a_eliminar = nodo_contenedor_actual.dato
                 
-                self.cpu_porcentaje_usado -= contenedor.cpu_porcentaje
-                self.ram_mb_usado -= contenedor.ram_mb
+                # Liberamos los recursos que estaba consumiendo el contenedor
+                self.cpu_porcentaje_usado -= contenedor_a_eliminar.cpu_porcentaje
+                self.ram_mb_usado -= contenedor_a_eliminar.ram_mb
                 
+                # Evitamos valores negativos
                 if self.cpu_porcentaje_usado < 0:
                     self.cpu_porcentaje_usado = 0.0
                 if self.ram_mb_usado < 0:
                     self.ram_mb_usado = 0
                 
-                if nodo_anterior is None:
-                    self.contenedores.primero = nodo_actual.siguiente
+                # Eliminamos el nodo de la lista enlazada
+                if nodo_contenedor_anterior is None:
+                    self.contenedores.primero = nodo_contenedor_actual.siguiente
                 else:
-                    nodo_anterior.siguiente = nodo_actual.siguiente
+                    nodo_contenedor_anterior.siguiente = nodo_contenedor_actual.siguiente
                 
-                return True, f"Contenedor {id_contenedor} eliminado exitosamente. CPU liberada: {contenedor.cpu_porcentaje}%, RAM liberada: {contenedor.ram_mb} MB"
+                return True, f"Contenedor {id_contenedor} eliminado exitosamente. CPU liberada: {contenedor_a_eliminar.cpu_porcentaje}%, RAM liberada: {contenedor_a_eliminar.ram_mb} MB"
             
-            nodo_anterior = nodo_actual
-            nodo_actual = nodo_actual.siguiente
+            nodo_contenedor_anterior = nodo_contenedor_actual
+            nodo_contenedor_actual = nodo_contenedor_actual.siguiente
         
         return False, f"Contenedor {id_contenedor} no encontrado en VM {self.id_vm}"
 

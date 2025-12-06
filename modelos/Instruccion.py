@@ -1,16 +1,16 @@
+from TDAs.ListaParametros import ListaParametros
+
 class Instruccion:
     def __init__(self, tipo):
         self.tipo = tipo
-        self.parametros = {}
+        self.parametros = ListaParametros()
     
     def agregar_parametro(self, clave, valor):
-        self.parametros[clave] = valor
+        self.parametros.agregar(clave, valor)
     
     def obtener_parametro(self, clave):
-        if clave in self.parametros:
-            return self.parametros[clave]
-        return None
+        return self.parametros.obtener(clave)
     
     def __str__(self):
-        params_str = ", ".join([f"{k}: {v}" for k, v in self.parametros.items()])
-        return f"Instruccion [{self.tipo}] - {params_str}"
+        parametros_texto = self.parametros.obtener_todos_como_texto()
+        return f"Instruccion [{self.tipo}] - {parametros_texto}"

@@ -2,48 +2,35 @@ from TDAs.Nodo import Nodo
 
 class ListaEnlazada:
     def __init__(self):
-        self.size = 0
-        self.ultimo = None
         self.primero = None
+        self.size = 0
     
-    #definiendo la función que va a insertar los datos a la lista
-     #____________________________________________________________________
     def insertar(self, dato):
-        nuevo = Nodo(dato)
-
-        if self.primero is None: 
-            self.primero = nuevo
-
+        nodo_nuevo = Nodo(dato)
+        
+        if self.primero is None:
+            self.primero = nodo_nuevo
         else:
-            actual = self.primero
-            while actual.siguiente:
-                actual = actual.siguiente
-            actual.siguiente = nuevo
-     #____________________________________________________________________
-
-       
-
-    #definiendo la función que va a mostrar los datos en la lista
-     #____________________________________________________________________
+            nodo_actual = self.primero
+            while nodo_actual.siguiente is not None:
+                nodo_actual = nodo_actual.siguiente
+            nodo_actual.siguiente = nodo_nuevo
+        
+        self.size += 1
+    
     def mostrar(self):
-        actual = self.primero
-        while actual:
-            print(actual.dato)
-            actual = actual.siguiente
-    #______________________________________________________________________
-
-
-
-    #definiendo la función que va a buscar los datos en la lista
-     #____________________________________________________________________
-    def buscar(self, id):
-        actual = self.primero
-        while actual:
-            if actual.dato.id == id:
-                return actual.dato
-            actual = actual.siguiente
+        nodo_actual = self.primero
+        while nodo_actual is not None:
+            print(nodo_actual.dato)
+            nodo_actual = nodo_actual.siguiente
+    
+    def buscar(self, id_buscado):
+        nodo_actual = self.primero
+        while nodo_actual is not None:
+            if nodo_actual.dato.id == id_buscado:
+                return nodo_actual.dato
+            nodo_actual = nodo_actual.siguiente
         return None
-     #____________________________________________________________________
 
 
     

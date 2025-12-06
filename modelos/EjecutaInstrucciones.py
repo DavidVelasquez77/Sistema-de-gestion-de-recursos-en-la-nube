@@ -12,11 +12,12 @@ class EjecutaInstrucciones:
         if self.instrucciones.primero is None:
             return "No hay instrucciones para ejecutar"
         
-        nodo_actual = self.instrucciones.primero
+        nodo_instruccion_actual = self.instrucciones.primero
         contador = 1
         
-        while nodo_actual:
-            instruccion = nodo_actual.dato
+        # Recorremos todas las instrucciones para ejecutarlas en orden
+        while nodo_instruccion_actual is not None:
+            instruccion = nodo_instruccion_actual.dato
             print(f"\nEjecutando instruccion {contador}: {instruccion.tipo}")
             
             if instruccion.tipo == "crearVM":
@@ -31,7 +32,7 @@ class EjecutaInstrucciones:
             print(f"  Resultado: {resultado}")
             self.historial.insertar(f"Instruccion {contador} [{instruccion.tipo}]: {resultado}")
             
-            nodo_actual = nodo_actual.siguiente
+            nodo_instruccion_actual = nodo_instruccion_actual.siguiente
             contador += 1
     
     def ejecutar_crear_vm(self, instruccion, lista_centros):
@@ -43,7 +44,8 @@ class EjecutaInstrucciones:
         ram = instruccion.obtener_parametro("ram")
         almacenamiento = instruccion.obtener_parametro("almacenamiento")
         
-        if not all([id_vm, id_centro, sistema_operativo, ip, cpu, ram, almacenamiento]):
+        # Verificamos que todos los parametros necesarios esten presentes
+        if id_vm is None or id_centro is None or sistema_operativo is None or ip is None or cpu is None or ram is None or almacenamiento is None:
             return "Error: Faltan parametros para crear VM"
         
         centro = self.buscar_centro_por_id(lista_centros, id_centro)
@@ -62,7 +64,8 @@ class EjecutaInstrucciones:
         centro_origen_id = instruccion.obtener_parametro("centroOrigen")
         centro_destino_id = instruccion.obtener_parametro("centroDestino")
         
-        if not all([id_vm, centro_origen_id, centro_destino_id]):
+        # Verificamos que todos los parametros necesarios esten presentes
+        if id_vm is None or centro_origen_id is None or centro_destino_id is None:
             return "Error: Faltan parametros para migrar VM"
         
         centro_origen = self.buscar_centro_por_id(lista_centros, centro_origen_id)
@@ -78,9 +81,10 @@ class EjecutaInstrucciones:
         if vm is None:
             return f"Error: VM {id_vm} no encontrada en centro {centro_origen.nombre}"
         
+        # Verificamos que el centro destino tenga recursos suficientes
         cpu_disponible = centro_destino.recursos.obtener_cpu_disponible()
         ram_disponible = centro_destino.recursos.obtener_ram_disponible()
-        alm_disponible = centro_destino.recursos.obtener_almacenamiento_disponible()
+        almacenamiento_disponible = centro_destino.recursos.obtener_almacenamiento_disponible()
         
         if vm.recursos.cpu_total > cpu_disponible:
             return f"Error: CPU insuficiente en destino. Disponible: {cpu_disponible}, Requerido: {vm.recursos.cpu_total}"
@@ -88,13 +92,15 @@ class EjecutaInstrucciones:
         if vm.recursos.ram_total > ram_disponible:
             return f"Error: RAM insuficiente en destino. Disponible: {ram_disponible}, Requerido: {vm.recursos.ram_total}"
         
-        if vm.recursos.almacenamiento_total > alm_disponible:
-            return f"Error: Almacenamiento insuficiente en destino. Disponible: {alm_disponible}, Requerido: {vm.recursos.almacenamiento_total}"
+        if vm.recursos.almacenamiento_total > almacenamiento_disponible:
+            return f"Error: Almacenamiento insuficiente en destino. Disponible: {almacenamiento_disponible}, Requerido: {vm.recursos.almacenamiento_total}"
         
+        # Eliminamos la VM del centro origen
         exito = self.eliminar_vm_de_centro(centro_origen, id_vm)
         if not exito:
             return f"Error: No se pudo eliminar VM del centro origen"
         
+        # Agregamos la VM al centro destino
         centro_destino.maquinas_virtuales.insertar(vm)
         centro_destino.recursos.asignar_recursos(vm.recursos.cpu_total, vm.recursos.ram_total, vm.recursos.almacenamiento_total)
         vm.centro_asignado = centro_destino.id_centro
@@ -132,11 +138,11 @@ class EjecutaInstrucciones:
         if lista_centros.primero is None:
             return None
         
-        nodo_actual = lista_centros.primero
-        while nodo_actual:
-            if nodo_actual.dato.id_centro == id_centro:
-                return nodo_actual.dato
-            nodo_actual = nodo_actual.siguiente
+        nodo_centro_actual = lista_centros.primero
+        while nodo_centro_actual is not None:
+            if nodo_centro_actual.dato.id_centro == id_centro:
+                return nodo_centro_actual.dato
+            nodo_centro_actual = nodo_centro_actual.siguiente
         
         return None
     
@@ -144,11 +150,11 @@ class EjecutaInstrucciones:
         if centro.maquinas_virtuales.primero is None:
             return None
         
-        nodo_actual = centro.maquinas_virtuales.primero
-        while nodo_actual:
-            if nodo_actual.dato.id_vm == id_vm:
-                return nodo_actual.dato
-            nodo_actual = nodo_actual.siguiente
+        nodo_vm_actual = centro.maquinas_virtuales.primero
+        while nodo_vm_actual is not None:
+            if nodo_vm_actual.dato.id_vm == id_vm:
+                return nodo_vm_actual.dato
+            nodo_vm_actual = nodo_vm_actual.siguiente
         
         return None
     
@@ -156,23 +162,26 @@ class EjecutaInstrucciones:
         if centro.maquinas_virtuales.primero is None:
             return False
         
-        nodo_actual = centro.maquinas_virtuales.primero
-        nodo_anterior = None
+        nodo_vm_actual = centro.maquinas_virtuales.primero
+        nodo_vm_anterior = None
         
-        while nodo_actual:
-            if nodo_actual.dato.id_vm == id_vm:
-                vm = nodo_actual.dato
+        # Buscamos la VM en la lista y la eliminamos liberando sus recursos
+        while nodo_vm_actual is not None:
+            if nodo_vm_actual.dato.id_vm == id_vm:
+                vm_a_eliminar = nodo_vm_actual.dato
                 
-                centro.recursos.liberar_recursos(vm.recursos.cpu_total, vm.recursos.ram_total, vm.recursos.almacenamiento_total)
+                # Liberamos los recursos que estaba consumiendo la VM
+                centro.recursos.liberar_recursos(vm_a_eliminar.recursos.cpu_total, vm_a_eliminar.recursos.ram_total, vm_a_eliminar.recursos.almacenamiento_total)
                 
-                if nodo_anterior is None:
-                    centro.maquinas_virtuales.primero = nodo_actual.siguiente
+                # Eliminamos el nodo de la lista enlazada
+                if nodo_vm_anterior is None:
+                    centro.maquinas_virtuales.primero = nodo_vm_actual.siguiente
                 else:
-                    nodo_anterior.siguiente = nodo_actual.siguiente
+                    nodo_vm_anterior.siguiente = nodo_vm_actual.siguiente
                 
                 return True
             
-            nodo_anterior = nodo_actual
-            nodo_actual = nodo_actual.siguiente
+            nodo_vm_anterior = nodo_vm_actual
+            nodo_vm_actual = nodo_vm_actual.siguiente
         
         return False

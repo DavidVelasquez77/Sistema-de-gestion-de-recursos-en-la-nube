@@ -6,19 +6,23 @@ class ColaPrioridad:
         self.size = 0
 
     def encolar(self, solicitud):
-        nuevo_nodo = Nodo(solicitud)
+        nodo_solicitud_nueva = Nodo(solicitud)
         
+        # Si la cola esta vacia, la nueva solicitud es la primera
         if self.primero is None:
-            self.primero = nuevo_nodo
+            self.primero = nodo_solicitud_nueva
+        # Si la nueva solicitud tiene mayor prioridad que la primera, pasa al inicio
         elif solicitud.prioridad > self.primero.dato.prioridad:
-            nuevo_nodo.siguiente = self.primero
-            self.primero = nuevo_nodo
+            nodo_solicitud_nueva.siguiente = self.primero
+            self.primero = nodo_solicitud_nueva
         else:
-            actual = self.primero
-            while actual.siguiente and actual.siguiente.dato.prioridad >= solicitud.prioridad:
-                actual = actual.siguiente
-            nuevo_nodo.siguiente = actual.siguiente
-            actual.siguiente = nuevo_nodo
+            # Buscamos la posicion correcta segun la prioridad
+            nodo_actual = self.primero
+            while nodo_actual.siguiente is not None and nodo_actual.siguiente.dato.prioridad >= solicitud.prioridad:
+                nodo_actual = nodo_actual.siguiente
+            
+            nodo_solicitud_nueva.siguiente = nodo_actual.siguiente
+            nodo_actual.siguiente = nodo_solicitud_nueva
         
         self.size += 1
 
@@ -26,10 +30,11 @@ class ColaPrioridad:
         if self.primero is None:
             return None
         
-        solicitud = self.primero.dato
+        # Extraemos la solicitud con mayor prioridad (la primera)
+        solicitud_prioritaria = self.primero.dato
         self.primero = self.primero.siguiente
         self.size -= 1
-        return solicitud
+        return solicitud_prioritaria
 
     def ver_primero(self):
         if self.primero is None:
@@ -43,7 +48,7 @@ class ColaPrioridad:
         if self.primero is None:
             return
         
-        actual = self.primero
-        while actual:
-            print(actual.dato)
-            actual = actual.siguiente
+        nodo_solicitud_actual = self.primero
+        while nodo_solicitud_actual is not None:
+            print(nodo_solicitud_actual.dato)
+            nodo_solicitud_actual = nodo_solicitud_actual.siguiente
