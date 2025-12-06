@@ -41,7 +41,7 @@ class XMLReader:
             return listaCentros
 
             for centro in centros:
-                print(f' Centro {centro.getAttribute('id')} cargado correcamente')
+                print(f" Centro {centro.getAttribute('id')} cargado correcamente")
 
             # reconociendo máquinas virtuales
             print("\n" + "="*50)
@@ -63,7 +63,7 @@ class XMLReader:
                 ram = recursos.getElementsByTagName("ram")[0].firstChild.data
                 almacenamiento = recursos.getElementsByTagName("almacenamiento")[0].firstChild.data
 
-                print(f'maquina virtual {vm.getAttribute('id')} cargada con sus especificaciones correctamente! ')
+                print(f"maquina virtual {vm.getAttribute('id')} cargada con sus especificaciones correctamente! ")
 
                 # CONTENEDORES dentro de la VM
                 contenedores = vm.getElementsByTagName("contenedores")[0] \
@@ -79,7 +79,7 @@ class XMLReader:
                     cpu_c = rec.getElementsByTagName("cpu")[0].firstChild.data
                     ram_c = rec.getElementsByTagName("ram")[0].firstChild.data
 
-                    print(f'contenedor {contenedor.getAttribute('id')} cargado con sus especificacione correctamente! ')
+                    print(f"contenedor {contenedor.getAttribute('id')} cargado con sus especificacione correctamente! ")
 
             # reconociendo Solicitudes
             print("\n" + "="*50)
@@ -101,7 +101,7 @@ class XMLReader:
                 ram_s = recursos.getElementsByTagName("ram")[0].firstChild.data
                 alm_s = recursos.getElementsByTagName("almacenamiento")[0].firstChild.data
 
-                print(f'solicitud con id: {solicitud.getAttribute('id')} cargada con sus especificaciones correctamente! ')
+                print(f"solicitud con id: {solicitud.getAttribute('id')} cargada con sus especificaciones correctamente! ")
 
             # --- INSTRUCCIONES ---
             print("\n" + "="*50)
