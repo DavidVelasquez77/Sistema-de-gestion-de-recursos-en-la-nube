@@ -7,6 +7,15 @@ class GeneradorReportes:
         self.gestor_solicitudes = gestor_solicitudes
         self.dot_exe = r'C:\Program Files\Graphviz\bin\dot.exe'
     
+    def _generar_png(self, archivo_dot, archivo_png):
+        try:
+            # Usamos string con espacios en vez de lista
+            comando = f'"{self.dot_exe}" -Tpng "{archivo_dot}" -o "{archivo_png}"'
+            subprocess.run(comando, shell=True, check=True, capture_output=True)
+            return True
+        except:
+            return False
+    
     def generar_reporte_centros(self):
         dot_content = 'digraph CentrosDatos {\n'
         dot_content += '    rankdir=TB;\n'
@@ -56,9 +65,10 @@ class GeneradorReportes:
             archivo.close()
             
             try:
-                subprocess.run([self.dot_exe, '-Tpng', 'reportes/reporte_centros.dot', '-o', 'reportes/reporte_centros.png'], 
-                            check=True, capture_output=True)
-                return True, 'reportes/reporte_centros.png'
+                if self._generar_png('reportes/reporte_centros.dot', 'reportes/reporte_centros.png'):
+                    return True, 'reportes/reporte_centros.png'
+                else:
+                    return True, 'reportes/reporte_centros.dot'
             except Exception as e:
                 print(f'   [Aviso: No se pudo generar PNG - {str(e)}]')
                 return True, 'reportes/reporte_centros.dot'
@@ -123,9 +133,10 @@ class GeneradorReportes:
             archivo.close()
             
             try:
-                subprocess.run([self.dot_exe, '-Tpng', nombre_archivo_dot, '-o', nombre_archivo_png], 
-                             check=True, capture_output=True)
-                return True, nombre_archivo_png
+                if self._generar_png(nombre_archivo_dot, nombre_archivo_png):
+                    return True, nombre_archivo_png
+                else:
+                    return True, nombre_archivo_dot
             except Exception as e:
                 print(f'   [Aviso: No se pudo generar PNG - {str(e)}]')
                 return True, nombre_archivo_dot
@@ -206,9 +217,10 @@ class GeneradorReportes:
             archivo.close()
             
             try:
-                subprocess.run([self.dot_exe, '-Tpng', nombre_archivo_dot, '-o', nombre_archivo_png], 
-                             check=True, capture_output=True)
-                return True, nombre_archivo_png
+                if self._generar_png(nombre_archivo_dot, nombre_archivo_png):
+                    return True, nombre_archivo_png
+                else:
+                    return True, nombre_archivo_dot
             except Exception as e:
                 print(f'   [Aviso: No se pudo generar PNG - {str(e)}]')
                 return True, nombre_archivo_dot
@@ -265,9 +277,10 @@ class GeneradorReportes:
             
             # Generar PNG automáticamente
             try:
-                subprocess.run([self.dot_exe, '-Tpng', 'reportes/reporte_cola_solicitudes.dot', '-o', 'reportes/reporte_cola_solicitudes.png'], 
-                             check=True, capture_output=True)
-                return True, 'reportes/reporte_cola_solicitudes.png'
+                if self._generar_png('reportes/reporte_cola_solicitudes.dot', 'reportes/reporte_cola_solicitudes.png'):
+                    return True, 'reportes/reporte_cola_solicitudes.png'
+                else:
+                    return True, 'reportes/reporte_cola_solicitudes.dot'
             except Exception as e:
                 print(f'   [Aviso: No se pudo generar PNG - {str(e)}]')
                 return True, 'reportes/reporte_cola_solicitudes.dot'
