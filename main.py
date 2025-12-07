@@ -308,7 +308,7 @@ def menu_maquinas_virtuales():
         print('1. Buscar VM por ID')
         print('2. Listar VMs de un centro')
         print('3. Migrar VM entre centros')
-        print('0. Volver al menú principal')
+        print('4. Volver al menú principal')
         print("="*50)
         
         opcion = input('\nSeleccione una opción: ')
@@ -319,7 +319,7 @@ def menu_maquinas_virtuales():
             listar_vms_de_un_centro()
         elif opcion == '3':
             migrar_vm()
-        elif opcion == '0':
+        elif opcion == '4':
             break
         else:
             print('\n   Opción inválida')
@@ -335,7 +335,7 @@ def listar_vms_de_un_centro():
         if nodo_centro.dato.id_centro == id_centro:
             centro = nodo_centro.dato
             
-            print(f'\n=== VMs del Centro: {centro.nombre} ({centro.id_centro}) ===\n')
+            print(f'\n=== VMs en {centro.nombre} ===\n')
             
             if centro.maquinas_virtuales.size == 0:
                 print('   No hay VMs en este centro\n')
@@ -346,12 +346,13 @@ def listar_vms_de_un_centro():
             
             while nodo_vm is not None:
                 vm = nodo_vm.dato
-                print(f'{contador}. VM: {vm.id_vm}')
-                print(f'   SO: {vm.sistema_operativo}')
+                
+                # Determinamos el estado basado en si tiene contenedores activos
+                estado = "Activa" if vm.contenedores.size > 0 else "Activa"
+                
+                print(f'{contador}. VM: {vm.id_vm} - {vm.sistema_operativo} (CPU: {vm.recursos.cpu_total}, RAM: {vm.recursos.ram_total}GB)')
+                print(f'   Estado: {estado}')
                 print(f'   IP: {vm.ip}')
-                print(f'   CPU: {vm.recursos.cpu_usado}/{vm.recursos.cpu_total} núcleos')
-                print(f'   RAM: {vm.recursos.ram_usado}/{vm.recursos.ram_total} GB')
-                print(f'   Almacenamiento: {vm.recursos.almacenamiento_usado}/{vm.recursos.almacenamiento_total} GB')
                 print(f'   Contenedores: {vm.contenedores.size}\n')
                 
                 nodo_vm = nodo_vm.siguiente
@@ -360,7 +361,7 @@ def listar_vms_de_un_centro():
             return
         nodo_centro = nodo_centro.siguiente
     
-    print(f'\n   Centro con ID {id_centro} no encontrado')
+    print(f'\n❌ Centro con ID {id_centro} no encontrado')
 
 def listar_todas_vms():
     """Lista todas las máquinas virtuales del sistema"""
@@ -424,7 +425,8 @@ def buscar_vm_por_id():
     """Busca una VM por su ID en todos los centros"""
     global lista_centros
     
-    id_vm = input('\nIngresa el ID de la VM: ')
+    print('\n=== BUSCAR MÁQUINA VIRTUAL ===\n')
+    id_vm = input('ID de la VM a buscar: ')
     
     nodo_centro = lista_centros.primero
     while nodo_centro is not None:
@@ -434,18 +436,22 @@ def buscar_vm_por_id():
         while nodo_vm is not None:
             if nodo_vm.dato.id_vm == id_vm:
                 vm = nodo_vm.dato
-                print(f'\n   VM encontrada en: {centro.nombre}')
-                print(f'   ID: {vm.id_vm}')
-                print(f'   SO: {vm.sistema_operativo}')
+                
+                # Determinamos el estado basado en si tiene contenedores activos
+                estado = "Activa" if vm.contenedores.size > 0 else "Inactiva"
+                
+                print(f'\n✓ VM encontrada:')
+                print(f'   VM: {vm.id_vm} - {vm.sistema_operativo} (CPU: {vm.recursos.cpu_total}, RAM: {vm.recursos.ram_total}GB)')
+                print(f'   Estado: {estado}')
                 print(f'   IP: {vm.ip}')
-                print(f'   {vm.recursos}')
-                print(f'   Contenedores: {vm.contenedores.size}')
+                print(f'   Centro asignado: {centro.nombre}')
+                print(f'   Contenedores: {vm.contenedores.size}\n')
                 return
             nodo_vm = nodo_vm.siguiente
         
         nodo_centro = nodo_centro.siguiente
     
-    print(f'\n   VM {id_vm} no encontrada')
+    print(f'\n❌ VM {id_vm} no encontrada\n')
 
 def migrar_vm():
     """Migra una VM de un centro a otro"""
