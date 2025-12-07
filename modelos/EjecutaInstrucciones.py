@@ -196,6 +196,9 @@ class EjecutaInstrucciones:
                 else:
                     nodo_vm_anterior.siguiente = nodo_vm_actual.siguiente
                 
+                # IMPORTANTE: Decrementamos el contador de la lista
+                centro.maquinas_virtuales.size -= 1
+                
                 return True
             
             nodo_vm_anterior = nodo_vm_actual

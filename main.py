@@ -124,9 +124,8 @@ def menu_centros_datos():
         print("="*50)
         print('1. Listar todos los Centros')
         print('2. Buscar Centro por ID')
-        print('3. Ver centro con más recursos disponibles')
-        print('4. Ver detalles completos de un centro')
-        print('0. Regresar al menú Principal')
+        print('3. Ver centro con más recursos')
+        print('4. Volver al menú principal')
         print("="*50)
         
         opcion = input('\nSeleccione una opción: ')
@@ -138,8 +137,6 @@ def menu_centros_datos():
         elif opcion == '3':
             ver_centro_mas_recursos()
         elif opcion == '4':
-            ver_detalles_centro()
-        elif opcion == '0':
             break
         else:
             print('\n   Opción inválida')
@@ -148,19 +145,34 @@ def listar_centros():
     """Lista todos los centros de datos"""
     global lista_centros
     
-    print('\n' + "="*50)
-    print('CENTROS DE DATOS')
-    print("="*50)
+    print('\n=== CENTROS DE DATOS REGISTRADOS ===\n')
     
     nodo_centro = lista_centros.primero
     contador = 1
     
     while nodo_centro is not None:
         centro = nodo_centro.dato
-        print(f'\n{contador}. {centro.nombre} ({centro.id_centro})')
+        
+        # Calculamos porcentajes de uso
+        cpu_usado = centro.recursos.cpu_usado
+        cpu_total = centro.recursos.cpu_total
+        porcentaje_cpu = (cpu_usado * 100.0) / cpu_total if cpu_total > 0 else 0.0
+        
+        ram_usado = centro.recursos.ram_usado
+        ram_total = centro.recursos.ram_total
+        porcentaje_ram = (ram_usado * 100.0) / ram_total if ram_total > 0 else 0.0
+        
+        alm_usado = centro.recursos.almacenamiento_usado
+        alm_total = centro.recursos.almacenamiento_total
+        porcentaje_alm = (alm_usado * 100.0) / alm_total if alm_total > 0 else 0.0
+        
+        # Mostramos la información del centro
+        print(f'{contador}. Centro: {centro.nombre} ({centro.id_centro}) - {centro.ciudad}, {centro.pais}')
         print(f'   Ubicación: {centro.ciudad}, {centro.pais}')
-        print(f'   {centro.recursos}')
-        print(f'   Total de VMs: {centro.maquinas_virtuales.size}')
+        print(f'   CPU: {cpu_usado}/{cpu_total} ({porcentaje_cpu:.2f}% usado)')
+        print(f'   RAM: {ram_usado}/{ram_total} GB ({porcentaje_ram:.2f}% usado)')
+        print(f'   Almacenamiento: {alm_usado}/{alm_total} TB ')
+        print(f'   VMs activas: {centro.maquinas_virtuales.size}\n')
         
         nodo_centro = nodo_centro.siguiente
         contador += 1
@@ -175,15 +187,31 @@ def buscar_centro_por_id():
     while nodo_centro is not None:
         if nodo_centro.dato.id_centro == id_centro:
             centro = nodo_centro.dato
-            print(f'\n   Centro encontrado:')
-            print(f'   Nombre: {centro.nombre}')
-            print(f'   ID: {centro.id_centro}')
+            
+            # Calculamos porcentajes de uso
+            cpu_usado = centro.recursos.cpu_usado
+            cpu_total = centro.recursos.cpu_total
+            porcentaje_cpu = (cpu_usado * 100.0) / cpu_total if cpu_total > 0 else 0.0
+            
+            ram_usado = centro.recursos.ram_usado
+            ram_total = centro.recursos.ram_total
+            porcentaje_ram = (ram_usado * 100.0) / ram_total if ram_total > 0 else 0.0
+            
+            alm_usado = centro.recursos.almacenamiento_usado
+            alm_total = centro.recursos.almacenamiento_total
+            porcentaje_alm = (alm_usado * 100.0) / alm_total if alm_total > 0 else 0.0
+            
+            # Mostramos la información del centro (mismo formato que el listado)
+            print(f'\n1. Centro: {centro.nombre} ({centro.id_centro}) - {centro.ciudad}, {centro.pais}')
             print(f'   Ubicación: {centro.ciudad}, {centro.pais}')
-            print(f'   {centro.recursos}')
+            print(f'   CPU: {cpu_usado}/{cpu_total} ({porcentaje_cpu:.2f}% usado)')
+            print(f'   RAM: {ram_usado}/{ram_total} GB ({porcentaje_ram:.2f}% usado)')
+            print(f'   Almacenamiento: {alm_usado}/{alm_total} TB ')
+            print(f'   VMs activas: {centro.maquinas_virtuales.size}\n')
             return
         nodo_centro = nodo_centro.siguiente
     
-    print(f'\n   Centro con ID {id_centro} no encontrado')
+    print(f'\n❌ Centro con ID {id_centro} no encontrado')
 
 def ver_centro_mas_recursos():
     """Muestra el centro con más recursos disponibles"""
@@ -210,8 +238,26 @@ def ver_centro_mas_recursos():
         nodo_centro = nodo_centro.siguiente
     
     if centro_max is not None:
-        print(f'\n   Centro con más recursos: {centro_max.nombre}')
-        print(f'   {centro_max.recursos}')
+        # Calculamos porcentajes de uso
+        cpu_usado = centro_max.recursos.cpu_usado
+        cpu_total = centro_max.recursos.cpu_total
+        porcentaje_cpu = (cpu_usado * 100.0) / cpu_total if cpu_total > 0 else 0.0
+        
+        ram_usado = centro_max.recursos.ram_usado
+        ram_total = centro_max.recursos.ram_total
+        porcentaje_ram = (ram_usado * 100.0) / ram_total if ram_total > 0 else 0.0
+        
+        alm_usado = centro_max.recursos.almacenamiento_usado
+        alm_total = centro_max.recursos.almacenamiento_total
+        porcentaje_alm = (alm_usado * 100.0) / alm_total if alm_total > 0 else 0.0
+        
+        # Mostramos la información del centro (mismo formato que el listado)
+        print(f'\n1. Centro: {centro_max.nombre} ({centro_max.id_centro}) - {centro_max.ciudad}, {centro_max.pais}')
+        print(f'   Ubicación: {centro_max.ciudad}, {centro_max.pais}')
+        print(f'   CPU: {cpu_usado}/{cpu_total} ({porcentaje_cpu:.2f}% usado)')
+        print(f'   RAM: {ram_usado}/{ram_total} GB ({porcentaje_ram:.2f}% usado)')
+        print(f'   Almacenamiento: {alm_usado}/{alm_total} TB ')
+        print(f'   VMs activas: {centro_max.maquinas_virtuales.size}\n')
 
 def ver_detalles_centro():
     """Muestra detalles completos de un centro incluyendo VMs y contenedores"""
@@ -259,27 +305,62 @@ def menu_maquinas_virtuales():
         print("="*50)
         print('Gestión de Máquinas Virtuales')
         print("="*50)
-        print('1. Listar todas las VMs')
-        print('2. Crear nueva VM')
-        print('3. Buscar VM por ID')
-        print('4. Migrar VM entre centros')
-        print('0. Regresar')
+        print('1. Buscar VM por ID')
+        print('2. Listar VMs de un centro')
+        print('3. Migrar VM entre centros')
+        print('0. Volver al menú principal')
         print("="*50)
         
         opcion = input('\nSeleccione una opción: ')
         
         if opcion == '1':
-            listar_todas_vms()
-        elif opcion == '2':
-            crear_nueva_vm()
-        elif opcion == '3':
             buscar_vm_por_id()
-        elif opcion == '4':
+        elif opcion == '2':
+            listar_vms_de_un_centro()
+        elif opcion == '3':
             migrar_vm()
         elif opcion == '0':
             break
         else:
             print('\n   Opción inválida')
+
+def listar_vms_de_un_centro():
+    """Lista las VMs de un centro específico"""
+    global lista_centros
+    
+    id_centro = input('\nIngresa el ID del centro: ')
+    
+    nodo_centro = lista_centros.primero
+    while nodo_centro is not None:
+        if nodo_centro.dato.id_centro == id_centro:
+            centro = nodo_centro.dato
+            
+            print(f'\n=== VMs del Centro: {centro.nombre} ({centro.id_centro}) ===\n')
+            
+            if centro.maquinas_virtuales.size == 0:
+                print('   No hay VMs en este centro\n')
+                return
+            
+            nodo_vm = centro.maquinas_virtuales.primero
+            contador = 1
+            
+            while nodo_vm is not None:
+                vm = nodo_vm.dato
+                print(f'{contador}. VM: {vm.id_vm}')
+                print(f'   SO: {vm.sistema_operativo}')
+                print(f'   IP: {vm.ip}')
+                print(f'   CPU: {vm.recursos.cpu_usado}/{vm.recursos.cpu_total} núcleos')
+                print(f'   RAM: {vm.recursos.ram_usado}/{vm.recursos.ram_total} GB')
+                print(f'   Almacenamiento: {vm.recursos.almacenamiento_usado}/{vm.recursos.almacenamiento_total} GB')
+                print(f'   Contenedores: {vm.contenedores.size}\n')
+                
+                nodo_vm = nodo_vm.siguiente
+                contador += 1
+            
+            return
+        nodo_centro = nodo_centro.siguiente
+    
+    print(f'\n   Centro con ID {id_centro} no encontrado')
 
 def listar_todas_vms():
     """Lista todas las máquinas virtuales del sistema"""
