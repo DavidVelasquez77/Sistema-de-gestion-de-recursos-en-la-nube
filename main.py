@@ -27,11 +27,10 @@ def menu_principal():
         print('3. Gestión de Máquinas Virtuales')
         print('4. Gestión de Contenedores')
         print('5. Gestión de Solicitudes')
-        print('6. Ejecutar Instrucciones')
-        print('7. Reportes en Graphviz')
-        print('8. Generar XML de Salida')
-        print('9. Historial de Operaciones')
-        print('0. Salir')
+        print('6. Reportes Graphviz')
+        print('7. Generar XML de Salida')
+        print('8. Historial de Operaciones')
+        print('9. Salir')
         print("="*50)
         
         opcion = input('\nElige una opción: ')
@@ -40,43 +39,38 @@ def menu_principal():
             cargar_archivo_xml()
         elif opcion == '2':
             if lista_centros is None:
-                print('\n  Primero debes cargar un archivo XML')
+                print('\n❌ Primero debes cargar un archivo XML')
             else:
                 menu_centros_datos()
         elif opcion == '3':
             if lista_centros is None:
-                print('\n  Primero debes cargar un archivo XML')
+                print('\n❌ Primero debes cargar un archivo XML')
             else:
                 menu_maquinas_virtuales()
         elif opcion == '4':
             if lista_centros is None:
-                print('\n  Primero debes cargar un archivo XML')
+                print('\n❌ Primero debes cargar un archivo XML')
             else:
                 menu_contenedores()
         elif opcion == '5':
             if lista_centros is None or gestor_solicitudes is None:
-                print('\n  Primero debes cargar un archivo XML')
+                print('\n❌ Primero debes cargar un archivo XML')
             else:
                 menu_solicitudes()
         elif opcion == '6':
-            if lista_centros is None or ejecutor_instrucciones is None:
-                print('\n Primero debes cargar un archivo XML')
-            else:
-                ejecutar_instrucciones()
+            print('\n📊 Módulo de reportes Graphviz en desarrollo...')
         elif opcion == '7':
-            print('\n Módulo de reportes en desarrollo...')
+            print('\n💾 Módulo de generación XML en desarrollo...')
         elif opcion == '8':
-            print('\n Módulo de generación XML en desarrollo...')
-        elif opcion == '9':
             if ejecutor_instrucciones is not None:
                 mostrar_historial()
             else:
-                print('\n  No hay historial disponible')
-        elif opcion == '0':
+                print('\n❌ No hay historial disponible')
+        elif opcion == '9':
             print('\n👋 ¡Hasta pronto!')
             break
         else:
-            print('\n   Error: Opción inválida. Elige entre 0 y 9')
+            print('\n❌ Error: Opción inválida. Elige entre 1 y 9')
 
 def cargar_archivo_xml():
     """Carga el archivo XML y inicializa las estructuras"""
@@ -211,7 +205,7 @@ def buscar_centro_por_id():
             return
         nodo_centro = nodo_centro.siguiente
     
-    print(f'\n❌ Centro con ID {id_centro} no encontrado')
+    print(f'\n Centro con ID {id_centro} no encontrado')
 
 def ver_centro_mas_recursos():
     """Muestra el centro con más recursos disponibles"""
@@ -479,66 +473,33 @@ def menu_contenedores():
         print("="*50)
         print('Gestión de Contenedores')
         print("="*50)
-        print('1. Listar todos los contenedores')
-        print('2. Agregar contenedor a una VM')
-        print('3. Eliminar contenedor de una VM')
-        print('0. Regresar')
+        print('1. Desplegar contenedor en VM')
+        print('2. Listar contenedores de una VM')
+        print('3. Cambiar estado de contenedor')
+        print('4. Eliminar contenedor')
+        print('5. Volver al menú principal')
         print("="*50)
         
         opcion = input('\nSeleccione una opción: ')
         
         if opcion == '1':
-            listar_contenedores()
+            desplegar_contenedor()
         elif opcion == '2':
-            agregar_contenedor()
+            listar_contenedores_de_vm()
         elif opcion == '3':
+            cambiar_estado_contenedor()
+        elif opcion == '4':
             eliminar_contenedor()
-        elif opcion == '0':
+        elif opcion == '5':
             break
         else:
-            print('\n   Opción inválida')
+            print('\n Opción inválida')
 
-def listar_contenedores():
-    """Lista todos los contenedores del sistema"""
+def desplegar_contenedor():
+    """Despliega un nuevo contenedor en una VM"""
     global lista_centros
     
-    print('\n' + "="*50)
-    print('CONTENEDORES')
-    print("="*50)
-    
-    total_contenedores = 0
-    nodo_centro = lista_centros.primero
-    
-    while nodo_centro is not None:
-        centro = nodo_centro.dato
-        
-        nodo_vm = centro.maquinas_virtuales.primero
-        while nodo_vm is not None:
-            vm = nodo_vm.dato
-            
-            if vm.contenedores.size > 0:
-                print(f'\n   VM: {vm.id_vm} ({centro.nombre})')
-                
-                nodo_cont = vm.contenedores.primero
-                while nodo_cont is not None:
-                    cont = nodo_cont.dato
-                    print(f'      {cont.id_contenedor}: {cont.nombre}')
-                    print(f'      Imagen: {cont.imagen}, Puerto: {cont.puerto}')
-                    print(f'      CPU: {cont.cpu_porcentaje}%, RAM: {cont.ram_mb} MB')
-                    total_contenedores += 1
-                    nodo_cont = nodo_cont.siguiente
-            
-            nodo_vm = nodo_vm.siguiente
-        
-        nodo_centro = nodo_centro.siguiente
-    
-    print(f'\n   Total de contenedores: {total_contenedores}')
-
-def agregar_contenedor():
-    """Agrega un contenedor a una VM"""
-    global lista_centros
-    
-    print('\n--- Agregar Contenedor ---')
+    print('\n=== DESPLEGAR CONTENEDOR ===\n')
     id_vm = input('ID de la VM: ')
     id_contenedor = input('ID del Contenedor: ')
     nombre = input('Nombre: ')
@@ -556,24 +517,133 @@ def agregar_contenedor():
         while nodo_vm is not None:
             if nodo_vm.dato.id_vm == id_vm:
                 vm = nodo_vm.dato
+                
+                # Guardamos el estado anterior para mostrar el cambio
+                cpu_usado_antes = vm.cpu_porcentaje_usado
+                ram_usado_antes = vm.ram_mb_usado
+                
                 exito, mensaje = vm.agregar_contenedor(id_contenedor, nombre, imagen, puerto, cpu_porcentaje, ram_mb)
                 
                 if exito:
-                    print(f'\n   {mensaje}')
+                    print(f'\n✅ {mensaje}')
+                    print(f'\n📊 Recursos de VM {id_vm} actualizados:')
+                    print(f'   CPU usado: {cpu_usado_antes:.1f}% → {vm.cpu_porcentaje_usado:.1f}% (+{float(cpu_porcentaje):.1f}%)')
+                    print(f'   RAM usado: {ram_usado_antes} MB → {vm.ram_mb_usado} MB (+{int(ram_mb)} MB)')
+                    print(f'   CPU disponible: {vm.obtener_cpu_disponible_porcentaje():.1f}%')
+                    print(f'   RAM disponible: {vm.obtener_ram_disponible_mb()} MB')
                 else:
-                    print(f'\n   {mensaje}')
+                    print(f'\n❌ {mensaje}')
                 return
             nodo_vm = nodo_vm.siguiente
         
         nodo_centro = nodo_centro.siguiente
     
-    print(f'\n   VM {id_vm} no encontrada')
+    print(f'\n❌ VM {id_vm} no encontrada')
+
+def listar_contenedores_de_vm():
+    """Lista todos los contenedores de una VM específica"""
+    global lista_centros
+    
+    print('\n=== LISTAR CONTENEDORES ===\n')
+    id_vm = input('ID de la VM: ')
+    
+    # Buscamos la VM en todos los centros
+    nodo_centro = lista_centros.primero
+    while nodo_centro is not None:
+        centro = nodo_centro.dato
+        
+        nodo_vm = centro.maquinas_virtuales.primero
+        while nodo_vm is not None:
+            if nodo_vm.dato.id_vm == id_vm:
+                vm = nodo_vm.dato
+                
+                print(f'\n=== Contenedores en VM {id_vm} ===\n')
+                
+                if vm.contenedores.size == 0:
+                    print('   No hay contenedores en esta VM\n')
+                    return
+                
+                nodo_cont = vm.contenedores.primero
+                contador = 1
+                
+                while nodo_cont is not None:
+                    cont = nodo_cont.dato
+                    
+                    print(f'{contador}. Contenedor: {cont.id_contenedor} - {cont.nombre} ({cont.imagen}) - Puerto: {cont.puerto}')
+                    print(f'   Estado: {cont.estado}')
+                    print(f'   CPU: {cont.cpu_porcentaje}%')
+                    print(f'   RAM: {cont.ram_mb} MB\n')
+                    
+                    nodo_cont = nodo_cont.siguiente
+                    contador += 1
+                
+                return
+            nodo_vm = nodo_vm.siguiente
+        
+        nodo_centro = nodo_centro.siguiente
+    
+    print(f'\n VM {id_vm} no encontrada')
+
+def cambiar_estado_contenedor():
+    """Cambia el estado de un contenedor"""
+    global lista_centros
+    
+    print('\n=== CAMBIAR ESTADO DE CONTENEDOR ===\n')
+    id_vm = input('ID de la VM: ')
+    id_contenedor = input('ID del Contenedor: ')
+    
+    print('\nEstados disponibles:')
+    print('1. Pausado')
+    print('2. Reiniciando')
+    print('3. Activo')
+    print('4. Detenido')
+    
+    nuevo_estado = input('\nSeleccione el nuevo estado (1-4): ')
+    
+    estados = {
+        '1': 'Pausado',
+        '2': 'Reiniciando',
+        '3': 'Activo',
+        '4': 'Detenido'
+    }
+    
+    if nuevo_estado not in estados:
+        print('\n Estado inválido')
+        return
+    
+    # Buscamos la VM y el contenedor
+    nodo_centro = lista_centros.primero
+    while nodo_centro is not None:
+        centro = nodo_centro.dato
+        
+        nodo_vm = centro.maquinas_virtuales.primero
+        while nodo_vm is not None:
+            if nodo_vm.dato.id_vm == id_vm:
+                vm = nodo_vm.dato
+                
+                # Buscamos el contenedor
+                nodo_cont = vm.contenedores.primero
+                while nodo_cont is not None:
+                    if nodo_cont.dato.id_contenedor == id_contenedor:
+                        # Cambiamos el estado del contenedor
+                        nodo_cont.dato.estado = estados[nuevo_estado]
+                        print(f'\n✅ Estado del contenedor {id_contenedor} cambiado a: {estados[nuevo_estado]}')
+                        return
+                    nodo_cont = nodo_cont.siguiente
+                
+                print(f'\n Contenedor {id_contenedor} no encontrado en VM {id_vm}')
+                return
+            nodo_vm = nodo_vm.siguiente
+        
+        nodo_centro = nodo_centro.siguiente
+    
+    print(f'\n VM {id_vm} no encontrada')
 
 def eliminar_contenedor():
     """Elimina un contenedor de una VM"""
     global lista_centros
     
-    print('\n--- Eliminar Contenedor ---')
+    print('\n=== ELIMINAR CONTENEDOR ===\n')
     id_vm = input('ID de la VM: ')
     id_contenedor = input('ID del Contenedor a eliminar: ')
     
@@ -589,15 +659,20 @@ def eliminar_contenedor():
                 exito, mensaje = vm.eliminar_contenedor(id_contenedor)
                 
                 if exito:
-                    print(f'\n   {mensaje}')
+                    print(f'\n✅ {mensaje}')
+                    print(f'\n📊 Recursos de VM {id_vm} actualizados:')
+                    print(f'   CPU usado: {vm.cpu_porcentaje_usado:.1f}%')
+                    print(f'   RAM usado: {vm.ram_mb_usado} MB')
+                    print(f'   CPU disponible: {vm.obtener_cpu_disponible_porcentaje():.1f}%')
+                    print(f'   RAM disponible: {vm.obtener_ram_disponible_mb()} MB')
                 else:
-                    print(f'\n   {mensaje}')
+                    print(f'\n❌ {mensaje}')
                 return
             nodo_vm = nodo_vm.siguiente
         
         nodo_centro = nodo_centro.siguiente
     
-    print(f'\n   VM {id_vm} no encontrada')
+    print(f'\n VM {id_vm} no encontrada')
 
 def menu_solicitudes():
     """Menu para gestionar solicitudes"""

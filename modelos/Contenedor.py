@@ -6,6 +6,7 @@ class Contenedor:
         self.puerto = int(puerto)
         self.cpu_porcentaje = float(cpu_porcentaje)
         self.ram_mb = int(ram_mb)
+        self.estado = "Running"  # Estado inicial: Running, Pausado, Reiniciando, Activo, Detenido
 
     def __str__(self):
         return f"Contenedor {self.id_contenedor} - {self.nombre} - Imagen: {self.imagen} - Puerto: {self.puerto} - CPU: {self.cpu_porcentaje}% - RAM: {self.ram_mb} MB"
