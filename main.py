@@ -4,6 +4,7 @@ from TDAs.ListaEnlazada import ListaEnlazada
 from modelos.CentroDatos import CentroDatos
 from modelos.GestorSolicitudes import GestorSolicitudes
 from modelos.EjecutaInstrucciones import EjecutaInstrucciones
+from datetime import datetime
 
 # Variables globales para mantener el estado del sistema
 lista_centros = None
@@ -58,9 +59,12 @@ def menu_principal():
             else:
                 menu_solicitudes()
         elif opcion == '6':
-            print('\n  falta graphviz')
+            print('\n   Modulo de reportes Graphviz en desarrollo...')
         elif opcion == '7':
-            print('\n  falta xml de salida')
+            if lista_centros is None:
+                print('\n   Primero debes cargar un archivo XML')
+            else:
+                generar_xml_salida()
         elif opcion == '8':
             if ejecutor_instrucciones is not None:
                 mostrar_historial()
@@ -845,5 +849,88 @@ def mostrar_historial():
         print(f'  • {nodo_hist.dato}')
         nodo_hist = nodo_hist.siguiente
 
+def generar_xml_salida():
+    """Genera el archivo XML de salida con el estado actual del sistema"""
+    global lista_centros
+    
+    print('\n=== GENERAR XML DE SALIDA ===\n')
+    nombre_archivo = input('Nombre del archivo de salida (sin extension): ')
+    
+    if not nombre_archivo:
+        nombre_archivo = 'resultado'
+    
+    nombre_archivo = nombre_archivo + '.xml'
+    
+    timestamp_actual = datetime.now().isoformat()
+    
+    vms_totales = 0
+    contenedores_totales = 0
+    
+    contenido_xml = '<?xml version="1.0"?>\n'
+    contenido_xml += '<resultadoCloudSync>\n'
+    contenido_xml += f'    <timestamp>{timestamp_actual}</timestamp>\n'
+    contenido_xml += '    <estadoCentros>\n'
+    
+    nodo_centro = lista_centros.primero
+    while nodo_centro is not None:
+        centro = nodo_centro.dato
+        
+        cpu_total = centro.recursos.cpu_total
+        cpu_disponible = centro.recursos.obtener_cpu_disponible()
+        cpu_usado = centro.recursos.cpu_usado
+        cpu_utilizacion = (cpu_usado / cpu_total * 100) if cpu_total > 0 else 0
+        
+        ram_total = centro.recursos.ram_total
+        ram_disponible = centro.recursos.obtener_ram_disponible()
+        ram_usado = centro.recursos.ram_usado
+        ram_utilizacion = (ram_usado / ram_total * 100) if ram_total > 0 else 0
+        
+        cantidad_vms = centro.maquinas_virtuales.size
+        vms_totales += cantidad_vms
+        
+        cantidad_contenedores = 0
+        nodo_vm = centro.maquinas_virtuales.primero
+        while nodo_vm is not None:
+            vm = nodo_vm.dato
+            cantidad_contenedores += vm.contenedores.size
+            nodo_vm = nodo_vm.siguiente
+        
+        contenedores_totales += cantidad_contenedores
+        
+        contenido_xml += f'        <centro id="{centro.id_centro}">\n'
+        contenido_xml += f'            <nombre>{centro.nombre}</nombre>\n'
+        contenido_xml += '            <recursos>\n'
+        contenido_xml += f'                <cpuTotal>{cpu_total}</cpuTotal>\n'
+        contenido_xml += f'                <cpuDisponible>{cpu_disponible}</cpuDisponible>\n'
+        contenido_xml += f'                <cpuUtilizacion>{cpu_utilizacion:.2f}%</cpuUtilizacion>\n'
+        contenido_xml += f'                <ramTotal>{ram_total}</ramTotal>\n'
+        contenido_xml += f'                <ramDisponible>{ram_disponible}</ramDisponible>\n'
+        contenido_xml += f'                <ramUtilizacion>{ram_utilizacion:.2f}%</ramUtilizacion>\n'
+        contenido_xml += '            </recursos>\n'
+        contenido_xml += f'            <cantidadVMs>{cantidad_vms}</cantidadVMs>\n'
+        contenido_xml += f'            <cantidadContenedores>{cantidad_contenedores}</cantidadContenedores>\n'
+        contenido_xml += '        </centro>\n'
+        
+        nodo_centro = nodo_centro.siguiente
+    
+    contenido_xml += '    </estadoCentros>\n'
+    contenido_xml += '    <estadisticas>\n'
+    contenido_xml += f'        <vmsActivas>{vms_totales}</vmsActivas>\n'
+    contenido_xml += f'        <contenedoresTotales>{contenedores_totales}</contenedoresTotales>\n'
+    contenido_xml += '    </estadisticas>\n'
+    contenido_xml += '</resultadoCloudSync>\n'
+    
+    try:
+        archivo = open(nombre_archivo, 'w', encoding='utf-8')
+        archivo.write(contenido_xml)
+        archivo.close()
+        
+        print(f'\n   Archivo {nombre_archivo} generado exitosamente')
+        print(f'   VMs totales: {vms_totales}')
+        print(f'   Contenedores totales: {contenedores_totales}\n')
+    except Exception as error:
+        print(f'\n   Error al generar el archivo: {error}\n')
+
 if __name__ == "__main__":
     menu_principal()
+
