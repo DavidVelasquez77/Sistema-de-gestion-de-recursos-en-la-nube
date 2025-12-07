@@ -58,9 +58,9 @@ def menu_principal():
             else:
                 menu_solicitudes()
         elif opcion == '6':
-            print('\n  Módulo de reportes Graphviz en desarrollo...')
+            print('\n  falta graphviz')
         elif opcion == '7':
-            print('\n   Módulo de generación XML en desarrollo...')
+            print('\n  falta xml de salida')
         elif opcion == '8':
             if ejecutor_instrucciones is not None:
                 mostrar_historial()
