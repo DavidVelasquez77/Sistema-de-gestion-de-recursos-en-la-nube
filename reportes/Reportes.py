@@ -1,5 +1,4 @@
 import subprocess
-import os
 
 class GeneradorReportes:
     def __init__(self, lista_centros, gestor_solicitudes):
