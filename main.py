@@ -60,14 +60,14 @@ def menu_principal():
         elif opcion == '6':
             print('\n  Módulo de reportes Graphviz en desarrollo...')
         elif opcion == '7':
-            print('\n💾 Módulo de generación XML en desarrollo...')
+            print('\n   Módulo de generación XML en desarrollo...')
         elif opcion == '8':
             if ejecutor_instrucciones is not None:
                 mostrar_historial()
             else:
                 print('\n   No hay historial disponible')
         elif opcion == '9':
-            print('\n👋 ¡Hasta pronto!')
+            print('\n   ¡Hasta pronto!')
             break
         else:
             print('\n   Error: Opción inválida. Elige entre 1 y 9')
@@ -102,7 +102,7 @@ def cargar_archivo_xml():
         # Ejecutamos automáticamente las instrucciones
         ejecutor_instrucciones.ejecutar_todas(lista_centros, gestor_solicitudes)
         
-        print('\n✓ Archivo XML cargado exitosamente')
+        print('\n  Archivo XML cargado exitosamente')
         
     except Exception as e:
         print(f'\n   Error al cargar el archivo: {e}')
@@ -434,7 +434,7 @@ def buscar_vm_por_id():
                 # Determinamos el estado basado en si tiene contenedores activos
                 estado = "Activa" if vm.contenedores.size > 0 else "Inactiva"
                 
-                print(f'\n✓ VM encontrada:')
+                print(f'\n  VM encontrada:')
                 print(f'   VM: {vm.id_vm} - {vm.sistema_operativo} (CPU: {vm.recursos.cpu_total}, RAM: {vm.recursos.ram_total}GB)')
                 print(f'   Estado: {estado}')
                 print(f'   IP: {vm.ip}')

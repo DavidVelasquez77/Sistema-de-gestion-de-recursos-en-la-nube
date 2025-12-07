@@ -46,7 +46,7 @@ class XMLReader:
                 # Nota: el parametro capacidad no se usa en el constructor, solo los valores individuales
                 nuevo_centro = CentroDatos(id_centro, nombre, pais, ciudad, 0, cpu, ram, almacenamiento)
                 lista_centros.insertar(nuevo_centro)
-                print(f"✓ Centro {id_centro} cargado")
+                print(f"  Centro {id_centro} cargado")
 
 
             # ========== CARGANDO MAQUINAS VIRTUALES ==========
@@ -76,7 +76,7 @@ class XMLReader:
                     exito, mensaje = centro_encontrado.crear_vm(id_vm, so, ip, cpu, ram, almacenamiento)
                     
                     if exito:
-                        print(f"✓ VM {id_vm} cargada en {centro_asignado}")
+                        print(f"  VM {id_vm} cargada en {centro_asignado}")
                         
                         # Obtenemos la VM recien creada para agregarle los contenedores
                         vm_creada = self.buscar_vm_en_centro(centro_encontrado, id_vm)
@@ -101,13 +101,13 @@ class XMLReader:
                                 exito_cont, mensaje_cont = vm_creada.agregar_contenedor(id_cont, nombre, imagen, puerto, cpu_porcentaje, ram_mb)
                                 
                                 if exito_cont:
-                                    print(f"  ✓ Contenedor {id_cont} agregado a VM {id_vm}")
+                                    print(f"    Contenedor {id_cont} agregado a VM {id_vm}")
                                 else:
-                                    print(f"  ✗ Error al agregar contenedor {id_cont}: {mensaje_cont}")
+                                    print(f"    Error al agregar contenedor {id_cont}: {mensaje_cont}")
                     else:
-                        print(f"✗ Error al cargar VM {id_vm}: {mensaje}")
+                        print(f"  Error al cargar VM {id_vm}: {mensaje}")
                 else:
-                    print(f"✗ Error: Centro {centro_asignado} no encontrado para VM {id_vm}")
+                    print(f"  Error: Centro {centro_asignado} no encontrado para VM {id_vm}")
 
 
             # ========== CARGANDO SOLICITUDES ==========
@@ -131,7 +131,7 @@ class XMLReader:
                 # Creamos el objeto Solicitud y lo agregamos a la lista
                 nueva_solicitud = Solicitud(id_soli, cliente_soli, tipo_soli, prioridad, cpu_s, ram_s, alm_s, tiempo_estimado)
                 lista_solicitudes.insertar(nueva_solicitud)
-                print(f"✓ Solicitud {id_soli} cargada")
+                print(f"  Solicitud {id_soli} cargada")
 
 
             # ========== CARGANDO INSTRUCCIONES ==========

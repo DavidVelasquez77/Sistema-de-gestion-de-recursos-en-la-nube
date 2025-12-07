@@ -20,19 +20,19 @@ class EjecutaInstrucciones:
             
             if instruccion.tipo == "crearVM":
                 resultado = self.ejecutar_crear_vm(instruccion, lista_centros)
-                print(f"  ✓ {resultado}")
+                print(f"    {resultado}")
                 self.historial.insertar(f"[crearVM]: {resultado}")
             elif instruccion.tipo == "migrarVM":
                 resultado = self.ejecutar_migrar_vm(instruccion, lista_centros)
-                print(f"  ✓ {resultado}")
+                print(f"    {resultado}")
                 self.historial.insertar(f"[migrarVM]: {resultado}")
             elif instruccion.tipo == "procesarSolicitudes":
                 resultado = self.ejecutar_procesar_solicitudes(instruccion, lista_centros, gestor_solicitudes)
-                print(f"  ✓ {resultado}")
+                print(f"    {resultado}")
                 self.historial.insertar(f"[procesarSolicitudes]: {resultado}")
             else:
                 resultado = f"Tipo de instruccion desconocido: {instruccion.tipo}"
-                print(f"  ✗ {resultado}")
+                print(f"    {resultado}")
                 self.historial.insertar(resultado)
             
             nodo_instruccion_actual = nodo_instruccion_actual.siguiente
