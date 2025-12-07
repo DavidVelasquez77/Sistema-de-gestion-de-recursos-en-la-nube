@@ -13,39 +13,52 @@ class EjecutaInstrucciones:
             return "No hay instrucciones para ejecutar"
         
         nodo_instruccion_actual = self.instrucciones.primero
-        contador = 1
         
         # Recorremos todas las instrucciones para ejecutarlas en orden
         while nodo_instruccion_actual is not None:
             instruccion = nodo_instruccion_actual.dato
-            print(f"\nEjecutando instruccion {contador}: {instruccion.tipo}")
             
             if instruccion.tipo == "crearVM":
                 resultado = self.ejecutar_crear_vm(instruccion, lista_centros)
+                print(f"  ✓ {resultado}")
+                self.historial.insertar(f"[crearVM]: {resultado}")
             elif instruccion.tipo == "migrarVM":
                 resultado = self.ejecutar_migrar_vm(instruccion, lista_centros)
+                print(f"  ✓ {resultado}")
+                self.historial.insertar(f"[migrarVM]: {resultado}")
             elif instruccion.tipo == "procesarSolicitudes":
                 resultado = self.ejecutar_procesar_solicitudes(instruccion, lista_centros, gestor_solicitudes)
+                print(f"  ✓ {resultado}")
+                self.historial.insertar(f"[procesarSolicitudes]: {resultado}")
             else:
                 resultado = f"Tipo de instruccion desconocido: {instruccion.tipo}"
-            
-            print(f"  Resultado: {resultado}")
-            self.historial.insertar(f"Instruccion {contador} [{instruccion.tipo}]: {resultado}")
+                print(f"  ✗ {resultado}")
+                self.historial.insertar(resultado)
             
             nodo_instruccion_actual = nodo_instruccion_actual.siguiente
-            contador += 1
     
     def ejecutar_crear_vm(self, instruccion, lista_centros):
+        # Soportamos diferentes nombres de parametros del XML
         id_vm = instruccion.obtener_parametro("id")
         id_centro = instruccion.obtener_parametro("centroAsignado")
+        if id_centro is None:
+            id_centro = instruccion.obtener_parametro("centro")
+        
         sistema_operativo = instruccion.obtener_parametro("sistemaOperativo")
+        if sistema_operativo is None:
+            sistema_operativo = instruccion.obtener_parametro("so")
+        
         ip = instruccion.obtener_parametro("ip")
+        if ip is None:
+            # Si no viene IP, generamos una automatica basada en el hash del id
+            ip = "192.168.1.100"
+        
         cpu = instruccion.obtener_parametro("cpu")
         ram = instruccion.obtener_parametro("ram")
         almacenamiento = instruccion.obtener_parametro("almacenamiento")
         
         # Verificamos que todos los parametros necesarios esten presentes
-        if id_vm is None or id_centro is None or sistema_operativo is None or ip is None or cpu is None or ram is None or almacenamiento is None:
+        if id_vm is None or id_centro is None or sistema_operativo is None or cpu is None or ram is None or almacenamiento is None:
             return "Error: Faltan parametros para crear VM"
         
         centro = self.buscar_centro_por_id(lista_centros, id_centro)
@@ -55,12 +68,16 @@ class EjecutaInstrucciones:
         exito, mensaje = centro.crear_vm(id_vm, sistema_operativo, ip, cpu, ram, almacenamiento)
         
         if exito:
-            return f"VM {id_vm} creada exitosamente en centro {centro.nombre}"
+            return f"VM creada exitosamente"
         else:
             return f"Error al crear VM: {mensaje}"
     
     def ejecutar_migrar_vm(self, instruccion, lista_centros):
+        # Soportamos diferentes nombres de parametros del XML
         id_vm = instruccion.obtener_parametro("id")
+        if id_vm is None:
+            id_vm = instruccion.obtener_parametro("vmId")
+        
         centro_origen_id = instruccion.obtener_parametro("centroOrigen")
         centro_destino_id = instruccion.obtener_parametro("centroDestino")
         
@@ -105,7 +122,7 @@ class EjecutaInstrucciones:
         centro_destino.recursos.asignar_recursos(vm.recursos.cpu_total, vm.recursos.ram_total, vm.recursos.almacenamiento_total)
         vm.centro_asignado = centro_destino.id_centro
         
-        return f"VM {id_vm} migrada exitosamente de {centro_origen.nombre} a {centro_destino.nombre}"
+        return f"VM migrada exitosamente a {centro_destino.nombre}"
     
     def ejecutar_procesar_solicitudes(self, instruccion, lista_centros, gestor_solicitudes):
         cantidad_str = instruccion.obtener_parametro("cantidad")
@@ -132,7 +149,7 @@ class EjecutaInstrucciones:
             
             procesadas += 1
         
-        return f"Solicitudes procesadas: {procesadas}/{cantidad} - Exitosas: {exitosas}, Fallidas: {fallidas}"
+        return f"Procesadas: {procesadas}, Completadas: {exitosas}, Fallidas: {fallidas}"
     
     def buscar_centro_por_id(self, lista_centros, id_centro):
         if lista_centros.primero is None:

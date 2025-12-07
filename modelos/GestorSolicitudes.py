@@ -18,6 +18,11 @@ class GestorSolicitudes:
         self.cola_solicitudes.encolar(nueva_solicitud)
         
         return True, f"Solicitud {id_solicitud} agregada a la cola con prioridad {prioridad_num}"
+    
+    def encolar_solicitud(self, solicitud):
+        """Encola una solicitud ya creada directamente a la cola de prioridad"""
+        self.cola_solicitudes.encolar(solicitud)
+        return True, f"Solicitud {solicitud.id_solicitud} encolada con prioridad {solicitud.prioridad}"
 
     def procesar_siguiente_solicitud(self, lista_centros):
         if self.cola_solicitudes.esta_vacia():

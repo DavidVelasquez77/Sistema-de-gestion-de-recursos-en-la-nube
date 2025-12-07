@@ -2,7 +2,7 @@
 <cloudSync>
   <configuracion>
     <centrosDatos>
-      <centro id="DC001" nombre="DataCenter Principal">
+      <centro id="DC004" nombre="DataCenter Principal">
         <ubicacion>
           <pais>Guatemala</pais>
           <ciudad>Guatemala City</ciudad>
