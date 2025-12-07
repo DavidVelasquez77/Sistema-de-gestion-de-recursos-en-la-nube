@@ -1,0 +1,12 @@
+digraph CentrosDatos {
+    rankdir=TB;
+    node [shape=box, style=filled];
+    graph [bgcolor=white, fontname="Arial", fontsize=12];
+    
+    titulo [label="CENTROS DE DATOS", shape=ellipse, fillcolor=lightsalmon, fontsize=16, fontname="Arial Bold"];
+    
+    centro1 [label="DC001\nDataCenter Principal\nGuatemala City, Guatemala\n\nCPU: 10/64 (15.6%)\nRAM: 20/256 GB (7.8%)\nVMs: 3", fillcolor=lightyellow];
+    titulo -> centro1;
+    centro2 [label="DC002\nDataCenter Respaldo\nAntigua Guatemala, Guatemala\n\nCPU: 12/32 (37.5%)\nRAM: 24/128 GB (18.8%)\nVMs: 2", fillcolor=lightyellow];
+    titulo -> centro2;
+}

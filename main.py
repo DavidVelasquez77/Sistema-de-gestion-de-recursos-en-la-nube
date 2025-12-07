@@ -1,12 +1,12 @@
-# Importaciones
+
 from XMLReader.xmlReader import XMLReader
 from TDAs.ListaEnlazada import ListaEnlazada
 from modelos.CentroDatos import CentroDatos
 from modelos.GestorSolicitudes import GestorSolicitudes
 from modelos.EjecutaInstrucciones import EjecutaInstrucciones
 from datetime import datetime
+from reportes.Reportes import GeneradorReportes
 
-# Variables globales para mantener el estado del sistema
 lista_centros = None
 lista_solicitudes = None
 lista_instrucciones = None
@@ -14,7 +14,6 @@ gestor_solicitudes = None
 ejecutor_instrucciones = None
 
 def menu_principal():
-    """Muestra el menu principal del sistema"""
     global lista_centros, lista_solicitudes, lista_instrucciones
     global gestor_solicitudes, ejecutor_instrucciones
     
@@ -59,7 +58,10 @@ def menu_principal():
             else:
                 menu_solicitudes()
         elif opcion == '6':
-            print('\n   Modulo de reportes Graphviz en desarrollo...')
+            if lista_centros is None or gestor_solicitudes is None:
+                print('\n   Primero debes cargar un archivo XML')
+            else:
+                menu_reportes()
         elif opcion == '7':
             if lista_centros is None:
                 print('\n   Primero debes cargar un archivo XML')
@@ -77,7 +79,6 @@ def menu_principal():
             print('\n   Error: Opción inválida. Elige entre 1 y 9')
 
 def cargar_archivo_xml():
-    """Carga el archivo XML y inicializa las estructuras"""
     global lista_centros, lista_solicitudes, lista_instrucciones
     global gestor_solicitudes, ejecutor_instrucciones
     
@@ -112,7 +113,6 @@ def cargar_archivo_xml():
         print(f'\n   Error al cargar el archivo: {e}')
 
 def menu_centros_datos():
-    """Menu para gestionar centros de datos"""
     global lista_centros
     
     while True:
@@ -140,7 +140,6 @@ def menu_centros_datos():
             print('\n   Opción inválida')
 
 def listar_centros():
-    """Lista todos los centros de datos"""
     global lista_centros
     
     print('\n=== CENTROS DE DATOS REGISTRADOS ===\n')
@@ -176,7 +175,6 @@ def listar_centros():
         contador += 1
 
 def buscar_centro_por_id():
-    """Busca un centro por su ID"""
     global lista_centros
     
     id_centro = input('\nIngresa el ID del centro a buscar: ')
@@ -212,7 +210,6 @@ def buscar_centro_por_id():
     print(f'\n Centro con ID {id_centro} no encontrado')
 
 def ver_centro_mas_recursos():
-    """Muestra el centro con más recursos disponibles"""
     global lista_centros
     
     if lista_centros.primero is None:
@@ -258,7 +255,6 @@ def ver_centro_mas_recursos():
         print(f'   VMs activas: {centro_max.maquinas_virtuales.size}\n')
 
 def ver_detalles_centro():
-    """Muestra detalles completos de un centro incluyendo VMs y contenedores"""
     global lista_centros
     
     id_centro = input('\nIngresa el ID del centro: ')
@@ -297,7 +293,6 @@ def ver_detalles_centro():
     print(f'\n   Centro con ID {id_centro} no encontrado')
 
 def menu_maquinas_virtuales():
-    """Menu para gestionar máquinas virtuales"""
     while True:
         print('\n')
         print("="*50)
@@ -323,7 +318,6 @@ def menu_maquinas_virtuales():
             print('\n   Opción inválida')
 
 def listar_vms_de_un_centro():
-    """Lista las VMs de un centro específico"""
     global lista_centros
     
     id_centro = input('\nIngresa el ID del centro: ')
@@ -362,7 +356,6 @@ def listar_vms_de_un_centro():
     print(f'\n   Centro con ID {id_centro} no encontrado')
 
 def listar_todas_vms():
-    """Lista todas las máquinas virtuales del sistema"""
     global lista_centros
     
     print('\n' + "="*50)
@@ -391,7 +384,6 @@ def listar_todas_vms():
     print(f'\n   Total de VMs en el sistema: {total_vms}')
 
 def crear_nueva_vm():
-    """Crea una nueva máquina virtual"""
     global lista_centros
     
     print('\n--- Crear Nueva VM ---')
@@ -420,7 +412,6 @@ def crear_nueva_vm():
     print(f'\n   Centro {id_centro} no encontrado')
 
 def buscar_vm_por_id():
-    """Busca una VM por su ID en todos los centros"""
     global lista_centros
     
     print('\n=== BUSCAR MÁQUINA VIRTUAL ===\n')
@@ -452,7 +443,6 @@ def buscar_vm_por_id():
     print(f'\n   VM {id_vm} no encontrada\n')
 
 def migrar_vm():
-    """Migra una VM de un centro a otro"""
     global lista_centros, ejecutor_instrucciones
     
     print('\n--- Migrar VM ---')
@@ -471,7 +461,6 @@ def migrar_vm():
     print(f'\n{resultado}')
 
 def menu_contenedores():
-    """Menu para gestionar contenedores"""
     while True:
         print('\n')
         print("="*50)
@@ -500,7 +489,6 @@ def menu_contenedores():
             print('\n Opción inválida')
 
 def desplegar_contenedor():
-    """Despliega un nuevo contenedor en una VM"""
     global lista_centros
     
     print('\n=== DESPLEGAR CONTENEDOR ===\n')
@@ -545,7 +533,6 @@ def desplegar_contenedor():
     print(f'\n   VM {id_vm} no encontrada')
 
 def listar_contenedores_de_vm():
-    """Lista todos los contenedores de una VM específica"""
     global lista_centros
     
     print('\n=== LISTAR CONTENEDORES ===\n')
@@ -589,7 +576,6 @@ def listar_contenedores_de_vm():
     print(f'\n VM {id_vm} no encontrada')
 
 def cambiar_estado_contenedor():
-    """Cambia el estado de un contenedor"""
     global lista_centros
     
     print('\n=== CAMBIAR ESTADO DE CONTENEDOR ===\n')
@@ -644,7 +630,6 @@ def cambiar_estado_contenedor():
     print(f'\n VM {id_vm} no encontrada')
 
 def eliminar_contenedor():
-    """Elimina un contenedor de una VM"""
     global lista_centros
     
     print('\n=== ELIMINAR CONTENEDOR ===\n')
@@ -679,7 +664,6 @@ def eliminar_contenedor():
     print(f'\n VM {id_vm} no encontrada')
 
 def menu_solicitudes():
-    """Menu para gestionar solicitudes"""
     while True:
         print('\n')
         print("="*50)
@@ -708,7 +692,6 @@ def menu_solicitudes():
             print('\n   Opción inválida')
 
 def agregar_nueva_solicitud():
-    """Agrega una nueva solicitud al sistema"""
     global gestor_solicitudes
     
     print('\n=== AGREGAR NUEVA SOLICITUD ===\n')
@@ -737,7 +720,6 @@ def agregar_nueva_solicitud():
         print(f'\n   {mensaje}')
 
 def procesar_solicitud_mayor_prioridad():
-    """Procesa la solicitud con mayor prioridad"""
     global lista_centros, gestor_solicitudes
     
     print('\n=== PROCESAR SOLICITUD DE MAYOR PRIORIDAD ===\n')
@@ -754,7 +736,6 @@ def procesar_solicitud_mayor_prioridad():
         print(f'   {mensaje}\n')
 
 def procesar_n_solicitudes():
-    """Procesa N solicitudes en orden de prioridad"""
     global lista_centros, gestor_solicitudes
     
     print('\n=== PROCESAR N SOLICITUDES ===\n')
@@ -799,7 +780,6 @@ def procesar_n_solicitudes():
         print('\n   Cantidad inválida. Debe ser un número entero\n')
 
 def ver_cola_solicitudes():
-    """Muestra todas las solicitudes pendientes ordenadas por prioridad"""
     global gestor_solicitudes
     
     print('\n=== COLA DE SOLICITUDES ===\n')
@@ -823,7 +803,6 @@ def ver_cola_solicitudes():
         contador += 1
 
 def ejecutar_instrucciones():
-    """Ejecuta todas las instrucciones cargadas del XML"""
     global lista_centros, gestor_solicitudes, ejecutor_instrucciones
     
     print('\n' + "="*50)
@@ -832,8 +811,91 @@ def ejecutar_instrucciones():
     
     ejecutor_instrucciones.ejecutar_todas(lista_centros, gestor_solicitudes)
 
+def menu_reportes():
+    global lista_centros, gestor_solicitudes
+    
+    while True:
+        print('\n')
+        print("="*50)
+        print('Reportes Graphviz')
+        print("="*50)
+        print('1. Reporte general de centros de datos')
+        print('2. Reporte de VMs de un centro')
+        print('3. Reporte de contenedores de una VM')
+        print('4. Reporte de cola de solicitudes')
+        print('5. Volver al menu principal')
+        print("="*50)
+        
+        opcion = input('\nSeleccione una opcion: ')
+        
+        if opcion == '1':
+            generar_reporte_centros()
+        elif opcion == '2':
+            generar_reporte_vms()
+        elif opcion == '3':
+            generar_reporte_contenedores()
+        elif opcion == '4':
+            generar_reporte_solicitudes()
+        elif opcion == '5':
+            break
+        else:
+            print('\n   Opcion invalida')
+
+def generar_reporte_centros():
+    global lista_centros, gestor_solicitudes
+    
+    print('\n=== REPORTE GENERAL DE CENTROS ===\n')
+    
+    generador = GeneradorReportes(lista_centros, gestor_solicitudes)
+    exito, resultado = generador.generar_reporte_centros()
+    
+    if exito:
+        print(f'   Reporte generado: {resultado}\n')
+    else:
+        print(f'   Error: {resultado}\n')
+
+def generar_reporte_vms():
+    global lista_centros, gestor_solicitudes
+    
+    print('\n=== REPORTE DE VMS DE UN CENTRO ===\n')
+    id_centro = input('ID del centro: ')
+    
+    generador = GeneradorReportes(lista_centros, gestor_solicitudes)
+    exito, resultado = generador.generar_reporte_vms_centro(id_centro)
+    
+    if exito:
+        print(f'\n   Reporte generado: {resultado}\n')
+    else:
+        print(f'\n   Error: {resultado}\n')
+
+def generar_reporte_contenedores():
+    global lista_centros, gestor_solicitudes
+    
+    print('\n=== REPORTE DE CONTENEDORES DE UNA VM ===\n')
+    id_vm = input('ID de la VM: ')
+    
+    generador = GeneradorReportes(lista_centros, gestor_solicitudes)
+    exito, resultado = generador.generar_reporte_contenedores_vm(id_vm)
+    
+    if exito:
+        print(f'\n   Reporte generado: {resultado}\n')
+    else:
+        print(f'\n   Error: {resultado}\n')
+
+def generar_reporte_solicitudes():
+    global lista_centros, gestor_solicitudes
+    
+    print('\n=== REPORTE DE COLA DE SOLICITUDES ===\n')
+    
+    generador = GeneradorReportes(lista_centros, gestor_solicitudes)
+    exito, resultado = generador.generar_reporte_cola_solicitudes()
+    
+    if exito:
+        print(f'   Reporte generado: {resultado}\n')
+    else:
+        print(f'   Error: {resultado}\n')
+
 def mostrar_historial():
-    """Muestra el historial de operaciones"""
     global ejecutor_instrucciones
     
     print('\n' + "="*50)
@@ -850,11 +912,10 @@ def mostrar_historial():
         nodo_hist = nodo_hist.siguiente
 
 def generar_xml_salida():
-    """Genera el archivo XML de salida con el estado actual del sistema"""
     global lista_centros
     
     print('\n=== GENERAR XML DE SALIDA ===\n')
-    nombre_archivo = input('Nombre del archivo de salida (sin extension): ')
+    nombre_archivo = input('Nombre del archivo de salida: ')
     
     if not nombre_archivo:
         nombre_archivo = 'resultado'

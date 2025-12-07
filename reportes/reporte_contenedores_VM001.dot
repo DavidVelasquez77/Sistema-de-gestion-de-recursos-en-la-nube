@@ -1,0 +1,10 @@
+digraph ContenedoresVM {
+    rankdir=TB;
+    node [shape=box, style=filled];
+    graph [bgcolor=white, fontname="Arial"];
+    
+    vm [label="VM: VM001\nUbuntu 22.04 LTS\nDataCenter Respaldo", shape=ellipse, fillcolor=lightsalmon, fontsize=14, fontname="Arial Bold"];
+    
+    cont1 [label="CNT001\nWebServer\nImagen: nginx:latest\nPuerto: 8080\nCPU: 30.0%\nRAM: 512 MB\nEstado: Running", fillcolor=lightpink, shape=component];
+    vm -> cont1;
+}

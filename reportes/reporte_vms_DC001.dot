@@ -1,0 +1,14 @@
+digraph VMsCentro {
+    rankdir=TB;
+    node [shape=box, style=filled];
+    graph [bgcolor=white, fontname="Arial"];
+    
+    centro [label="MAQUINAS VIRTUALES\nDataCenter Principal", shape=ellipse, fillcolor=peachpuff, fontsize=14, fontname="Arial Bold"];
+    
+    vm1 [label="VM002\nWindows Server 2022\nIP: 192.168.1.11\nCPU: 4 nucleos\nRAM: 8 GB\nContenedores: 1", fillcolor=lightsalmon];
+    centro -> vm1;
+    vm2 [label="REQ001\nSistema Automatico\nIP: Auto-asignada\nCPU: 4 nucleos\nRAM: 8 GB\nContenedores: 0", fillcolor=moccasin];
+    centro -> vm2;
+    vm3 [label="REQ002_BKP\nSistema Backup - Suspendida\nIP: Auto-asignada\nCPU: 2 nucleos\nRAM: 4 GB\nContenedores: 0", fillcolor=moccasin];
+    centro -> vm3;
+}

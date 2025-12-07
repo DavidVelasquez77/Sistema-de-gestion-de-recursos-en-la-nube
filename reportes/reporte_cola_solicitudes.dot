@@ -1,0 +1,10 @@
+digraph ColaSolicitudes {
+    rankdir=TB;
+    node [shape=box, style=filled];
+    graph [bgcolor=white, fontname="Arial"];
+    
+    titulo [label="COLA DE SOLICITUDES\n(Mayor a Menor Prioridad)", shape=ellipse, fillcolor=lightsalmon, fontsize=14, fontname="Arial Bold"];
+    
+    vacio [label="No hay solicitudes pendientes", shape=note, fillcolor=lightyellow];
+    titulo -> vacio;
+}
